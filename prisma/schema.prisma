@@ -1,0 +1,33 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"  // Or "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String       @id @default(uuid())
+  email              String    @unique
+  projects           Project[]
+}
+
+model Project {
+  id          String       @id @default(uuid())
+  name        String
+  schema      Json?    // JSON to store schema design (optional)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  databaseId  String
+  database    Database  @relation(fields: [databaseId], references: [id])
+}
+
+model Database {
+  id                 String       @id @default(uuid())
+  type               String
+  credentials        Json
+  projects           Project[]
+}
