@@ -1,5 +1,7 @@
 // lib/formHandlers.ts
 
+import { connectToDatabase } from '../database';
+
 type SetConnectionStatusType = React.Dispatch<React.SetStateAction<'idle' | 'connecting' | 'success' | 'error'>>;
 type SetErrorMessageType = React.Dispatch<React.SetStateAction<string>>;
 
@@ -12,18 +14,13 @@ export const handleFormSubmit = async (
 	setErrorMessage('');
 
 	try {
-		const res = await fetch('/api/database/test', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(values),
-		});
+		const connected = await connectToDatabase(values);
 
-		const data = await res.json();
-		setConnectionStatus(data.status);
-		if (data.status === 'error') {
-			setErrorMessage(data.message);
+		if (connected) {
+			setConnectionStatus('success');
+		} else {
+			setConnectionStatus('error');
+			setErrorMessage('Invalid credentials or unsupported database type');
 		}
 	} catch (error) {
 		setConnectionStatus('error');

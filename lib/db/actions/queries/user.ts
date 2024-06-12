@@ -1,5 +1,5 @@
 // lib/queries.ts
-import { db } from './db';
+import { db } from '@/lib/db';
 import { currentUser } from '@clerk/nextjs/server';
 
 export async function createUserIfNotExists() {

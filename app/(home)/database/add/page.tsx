@@ -1,15 +1,18 @@
 'use client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState, useEffect } from 'react';
-import { SqlSchema, MongoSchema } from '@/lib/schemas';
+import { SqlSchema, MongoSchema } from '@/lib/db/schemas';
 
-import DatabaseForm from '@/components/forms/DatabaseForm';
-import { handleFormSubmit } from '@/lib/forms/formHandler';
+import DatabaseForm from '@/components/forms/database-form';
+import * as z from 'zod';
+import { saveCredentials } from '@/lib/db/actions/database';
+import { useRouter } from 'next/navigation';
+import { handleFormSubmit } from '@/lib/db/actions/forms/handler';
 
 export default function Page() {
 	const [connectionStatus, setConnectionStatus] = useState<'idle' | 'connecting' | 'success' | 'error'>('idle');
 	const [errorMessage, setErrorMessage] = useState('');
-	const [activeTab, setActiveTab] = useState('account');
+	const router = useRouter();
 
 	useEffect(() => {
 		if (connectionStatus === 'success') {
@@ -20,15 +23,19 @@ export default function Page() {
 		}
 	}, [connectionStatus]);
 
-	const handleTabChange = (value: string) => {
-		setActiveTab(value);
+	const handleTabChange = () => {
 		setConnectionStatus('idle'); // Reset connection status
 		setErrorMessage(''); // Reset error message
 	};
 
+	const onSave = async (values: z.infer<typeof SqlSchema> | z.infer<typeof MongoSchema>) => {
+		await saveCredentials(values);
+		router.push('/database');
+	};
+
 	return (
-		<div className='flex h-screen items-center justify-center'>
-			<Tabs onValueChange={handleTabChange} defaultValue='account' className='w-[400px]'>
+		<div className='h-full px-4 py-6 lg:px-8'>
+			<Tabs onValueChange={handleTabChange} defaultValue='account'>
 				<TabsList className='grid w-full grid-cols-2'>
 					<TabsTrigger value='account'>SQL (MySQL)</TabsTrigger>
 					<TabsTrigger value='password'>NoSQL (MongoDB)</TabsTrigger>
@@ -45,6 +52,7 @@ export default function Page() {
 							password: '',
 						}}
 						onSubmit={(values: any) => handleFormSubmit(values, setConnectionStatus, setErrorMessage)}
+						onSave={onSave}
 						connectionStatus={connectionStatus}
 						errorMessage={errorMessage}
 					/>
@@ -54,9 +62,10 @@ export default function Page() {
 						schema={MongoSchema}
 						defaultValues={{
 							databaseType: 'mongodb',
-							uri: 'mongodb://localhost:27017/my_database',
+							mongoUri: 'mongodb://localhost:27017/my_database',
 						}}
 						onSubmit={(values: any) => handleFormSubmit(values, setConnectionStatus, setErrorMessage)}
+						onSave={onSave}
 						connectionStatus={connectionStatus}
 						errorMessage={errorMessage}
 					/>

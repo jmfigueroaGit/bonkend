@@ -1,5 +1,3 @@
-// schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,24 +8,75 @@ datasource db {
 }
 
 model User {
-  id                 String       @id @default(uuid())
-  email              String    @unique
-  projects           Project[]
+  id             String        @id @default(uuid())
+  email          String        @unique
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  databases      Database[]
 }
 
-model Project {
-  id          String       @id @default(uuid())
-  name        String
-  schema      Json?    // JSON to store schema design (optional)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  databaseId  String
-  database    Database  @relation(fields: [databaseId], references: [id])
+model Subscription {
+  id             String  @id @default(uuid())
+  name           String
+  databaseLimit  Int
+  apiLimit       Int
+  users          User[]
 }
 
 model Database {
-  id                 String       @id @default(uuid())
-  type               String
-  credentials        Json
-  projects           Project[]
+  id           String    @id @default(uuid())
+  type         String
+  credentials  Json   
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  tables       Table[]
+}
+
+model Table {
+  id          String    @id @default(uuid())
+  name        String
+  databaseId  String    // Foreign key to Database
+  database    Database  @relation(fields: [databaseId], references: [id])
+  columns     Column[]
+  apis        Api[]
+}
+
+model Column {
+  id             String  @id @default(uuid())
+  name           String
+  dataType       String  // e.g., 'String', 'Int', 'Boolean'
+  isRequired     Boolean @default(false)
+  isUnique       Boolean @default(false)
+  isPrimaryKey   Boolean @default(false)
+  tableId        String
+  table          Table   @relation(fields: [tableId], references: [id])
+}
+
+model Api {
+  id         String           @id @default(uuid())
+  name       String
+  route      String           // API Route/Endpoint
+  method     String           // HTTP method (GET, POST, PUT, DELETE)
+  tableId    String
+  table      Table            @relation(fields: [tableId], references: [id])
+  authentication Authentication?
+  responseType ResponseType?
+}
+
+// Authentication Settings for API
+model Authentication {
+  id        String    @id @default(uuid())
+  type      String    // e.g., 'Bearer Token'
+  apiKey    String?   // Optional fields for specific auth types
+  apiSecret String? 
+  apiId     String    @unique
+  api       Api       @relation(fields: [apiId], references: [id])
+}
+
+// Response Type for API
+model ResponseType {
+  id        String  @id @default(uuid())
+  type      String  // e.g., 'JSON', 'XML', 'HTML'
+  apiId     String  @unique
+  api       Api     @relation(fields: [apiId], references: [id])
 }

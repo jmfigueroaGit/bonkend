@@ -1,3 +1,4 @@
+import { Table } from '@/components/ui/table';
 // lib/schemas.ts
 import * as z from 'zod';
 
@@ -12,5 +13,10 @@ export const SqlSchema = z.object({
 
 export const MongoSchema = z.object({
 	databaseType: z.literal('mongodb'),
-	uri: z.string(),
+	mongoUri: z.string(),
+});
+
+export const TableSchema = z.object({
+	name: z.string().min(1, { message: 'Name is required' }), // Added validation
+	databaseId: z.string(),
 });
