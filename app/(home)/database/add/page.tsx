@@ -5,9 +5,10 @@ import { SqlSchema, MongoSchema } from '@/lib/db/schemas';
 
 import DatabaseForm from '@/components/forms/database-form';
 import * as z from 'zod';
-import { saveCredentials } from '@/lib/db/actions/database';
+import { saveCredentials } from '@/lib/db/actions/queries/database';
 import { useRouter } from 'next/navigation';
 import { handleFormSubmit } from '@/lib/db/actions/forms/handler';
+import { toast } from 'sonner';
 
 export default function Page() {
 	const [connectionStatus, setConnectionStatus] = useState<'idle' | 'connecting' | 'success' | 'error'>('idle');
@@ -30,6 +31,7 @@ export default function Page() {
 
 	const onSave = async (values: z.infer<typeof SqlSchema> | z.infer<typeof MongoSchema>) => {
 		await saveCredentials(values);
+		toast.success('Database added successfully');
 		router.push('/database');
 	};
 
@@ -44,6 +46,7 @@ export default function Page() {
 					<DatabaseForm
 						schema={SqlSchema}
 						defaultValues={{
+							name: '',
 							databaseType: 'mysql',
 							host: 'localhost',
 							port: 3306,
@@ -61,6 +64,7 @@ export default function Page() {
 					<DatabaseForm
 						schema={MongoSchema}
 						defaultValues={{
+							name: '',
 							databaseType: 'mongodb',
 							mongoUri: 'mongodb://localhost:27017/my_database',
 						}}

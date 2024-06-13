@@ -1,6 +1,6 @@
 // lib/formHandlers.ts
 
-import { connectToDatabase } from '../database';
+import { connectToDatabase } from '../queries/database';
 
 type SetConnectionStatusType = React.Dispatch<React.SetStateAction<'idle' | 'connecting' | 'success' | 'error'>>;
 type SetErrorMessageType = React.Dispatch<React.SetStateAction<string>>;
