@@ -38,7 +38,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
 						<Link href='/projects'>
 							<Button variant={`${pathname === '/projects' ? 'secondary' : 'ghost'}`} className='w-full justify-start'>
 								<Braces className='mr-2 h-4 w-4' />
-								Projects
+								API Endpoints
 							</Button>
 						</Link>
 					</div>

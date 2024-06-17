@@ -37,6 +37,7 @@ export const getTablesByDatabaseId = async (databaseId: string) => {
 			tables: {
 				include: {
 					columns: true,
+					apis: true,
 				},
 			},
 		},
@@ -364,4 +365,23 @@ export async function deleteTableOnDatabase(tableId: string) {
 		console.error('Error deleting table:', error);
 		return { error: 'Error deleting table', status: 500 };
 	}
+}
+
+export async function getTableById(tableId: string) {
+	const user = await currentUser();
+
+	if (!user) {
+		return { error: 'Unauthorized', status: 401 };
+	}
+
+	const table = await db.table.findFirst({
+		where: { id: tableId },
+		include: { columns: true, database: true, apis: true },
+	});
+
+	if (!table) {
+		return { error: 'Table not found', status: 404 };
+	}
+
+	return table;
 }

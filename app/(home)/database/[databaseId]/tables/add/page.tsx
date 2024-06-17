@@ -19,6 +19,7 @@ import { createColumnOnTable } from '@/lib/db/actions/queries/table';
 import { toast } from 'sonner';
 import { Database } from '@prisma/client';
 import { getDatabaseById } from '@/lib/db/actions/queries/database';
+import { generateApiQueries } from '@/lib/db/actions/queries/api';
 
 const columnsSchema = z.array(ColumnSchema); // Define a schema for an array of columns
 
@@ -81,6 +82,7 @@ export default function AddTablePage() {
 
 			if ('data' in table && table.data) {
 				form.reset();
+				await generateApiQueries(table.data.id);
 				toast.success('Table created successfully!');
 				router.push(`/database/${databaseId}/tables`);
 			} else {

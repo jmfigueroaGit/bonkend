@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { getDatabaseById } from '@/lib/db/actions/queries/database';
 import { toast } from 'sonner';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const description =
 	'An AI playground with a sidebar navigation and a main content area. The playground has a header with a settings drawer and a share button. The sidebar has navigation links and a user menu. The main content area shows a form to configure the model and messages.';
@@ -89,7 +90,7 @@ export default function Dashboard() {
 				{error && <p>{error}</p>}
 				{tables.map((table) => (
 					<Link key={table.id} href={`/database/${databaseId}/tables/${table.id}`}>
-						<Card className='cursor-pointer transition-colors duration-200 hover:border-primary border border-opacity-10'>
+						<Card className='cursor-pointer transition-colors duration-200 hover:border-primary border border-opacity-10 h-96'>
 							<CardHeader>
 								<div className='flex justify-between'>
 									<div>
@@ -130,33 +131,37 @@ export default function Dashboard() {
 									</Tooltip>
 								</div>
 							</CardHeader>
-							<CardContent className='grid gap-6'>
-								{table.columns.map((column) => (
-									<div key={column.id} className='flex items-center justify-between space-x-4'>
-										<div className='flex items-center space-x-4'>
-											<Avatar className='h-8 w-8'>
-												<AvatarFallback className='text-xs'>
-													{column.dataType === 'string' || column.dataType === 'VARCHAR(255)'
-														? 'str'
-														: column.dataType === 'INT' || column.dataType === 'number'
-														? 'int'
-														: column.dataType === 'BOOLEAN' || column.dataType === 'bool'
-														? 'bool'
-														: column.dataType === 'DATE' || column.dataType === 'date' || column.dataType === 'DATETIME'
-														? 'date'
-														: column.dataType === 'DECIMAL' || column.dataType === 'decimal'
-														? 'dec...'
-														: 'obj'}
-												</AvatarFallback>
-											</Avatar>
-											<div>
-												<p className='text-sm font-medium leading-none'>{column.name}</p>
-												<p className='text-sm text-muted-foreground'>{column.dataType}</p>
+							<ScrollArea className='h-72'>
+								<CardContent className='grid gap-6 '>
+									{table.columns.map((column) => (
+										<div key={column.id} className='flex items-center justify-between space-x-4'>
+											<div className='flex items-center space-x-4'>
+												<Avatar className='h-8 w-8'>
+													<AvatarFallback className='text-xs'>
+														{column.dataType === 'string' || column.dataType === 'VARCHAR(255)'
+															? 'str'
+															: column.dataType === 'INT' || column.dataType === 'number'
+															? 'int'
+															: column.dataType === 'BOOLEAN' || column.dataType === 'bool'
+															? 'bool'
+															: column.dataType === 'DATE' ||
+															  column.dataType === 'date' ||
+															  column.dataType === 'DATETIME'
+															? 'date'
+															: column.dataType === 'DECIMAL' || column.dataType === 'decimal'
+															? 'dec...'
+															: 'obj'}
+													</AvatarFallback>
+												</Avatar>
+												<div>
+													<p className='text-sm font-medium leading-none'>{column.name}</p>
+													<p className='text-sm text-muted-foreground'>{column.dataType}</p>
+												</div>
 											</div>
 										</div>
-									</div>
-								))}
-							</CardContent>
+									))}
+								</CardContent>
+							</ScrollArea>
 						</Card>
 					</Link>
 				))}

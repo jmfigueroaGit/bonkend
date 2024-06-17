@@ -1,3 +1,5 @@
 {
-	"workbench.editor.limit.perEditorGroup": true
+	"workbench.editor.limit.perEditorGroup": false,
+	"workbench.editor.enablePreview": false,
+	"zentabs.maximumOpenedTabs": 10
 }
